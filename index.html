@@ -41,7 +41,16 @@
       </div>
       <div class="data-tabs" aria-label="KMZ data files">
         <span class="data-tabs-label">Data</span>
-        <div id="kmzTabs" class="data-tabs-list"></div>
+        <div id="kmzSelector" class="kmz-selector">
+          <button id="kmzDropdownButton" class="kmz-select-button" type="button" aria-expanded="false" aria-controls="kmzDropdown">
+            <span id="kmzSelectedLabel">Select data</span>
+            <span class="kmz-select-arrow" aria-hidden="true"></span>
+          </button>
+          <div id="kmzDropdown" class="kmz-dropdown" hidden>
+            <input id="kmzSearch" class="kmz-search" type="search" placeholder="Search KMZ" autocomplete="off" />
+            <div id="kmzTabs" class="data-tabs-list" role="listbox"></div>
+          </div>
+        </div>
       </div>
       <input id="kmzFile" class="file-input" type="file" accept=".kmz,.kml,application/vnd.google-earth.kmz,application/vnd.google-earth.kml+xml" />
       <span id="kmzStatus" class="upload-status" aria-live="polite"></span>

@@ -9,6 +9,10 @@ const uploadKmz = document.querySelector("#uploadKmz");
 const kmzFile = document.querySelector("#kmzFile");
 const kmzStatus = document.querySelector("#kmzStatus");
 const kmzTabs = document.querySelector("#kmzTabs");
+const kmzDropdownButton = document.querySelector("#kmzDropdownButton");
+const kmzSelectedLabel = document.querySelector("#kmzSelectedLabel");
+const kmzDropdown = document.querySelector("#kmzDropdown");
+const kmzSearch = document.querySelector("#kmzSearch");
 const fieldInfoCard = document.querySelector("#fieldInfoCard");
 const fieldInfoTitle = document.querySelector("#fieldInfoTitle");
 
@@ -21,6 +25,7 @@ let resumeSpinAt = 0;
 let uploadedDataSource;
 let overviewDataSource;
 let activeKmzButton;
+let bundledKmzFiles = [];
 let fieldPinImagePromise;
 let activeFieldInfoTitle = "-";
 let fieldInfoHideLockedUntil = 0;
@@ -281,6 +286,37 @@ function stylePlacemarkVisibility(entity) {
   if (entity.label) entity.label.show = false;
   if (entity.point) entity.point.show = false;
 }
+function setEntityDistanceDisplay(entity, near, far) {
+  const condition = new Cesium.DistanceDisplayCondition(near, far);
+  if (entity.billboard) entity.billboard.distanceDisplayCondition = condition;
+  if (entity.polyline) entity.polyline.distanceDisplayCondition = condition;
+  if (entity.polygon) entity.polygon.distanceDisplayCondition = condition;
+  if (entity.label) entity.label.distanceDisplayCondition = condition;
+  if (entity.point) entity.point.distanceDisplayCondition = condition;
+}
+
+function addOverviewBoundary(dataSource, item, positions) {
+  const loop = closePositions(positions);
+  if (loop.length < 2) return;
+
+  const center = getCenterFromPositions(positions);
+  const boundary = dataSource.entities.add({
+    name: `${item.name || item.file || "Field"} overview boundary`,
+    polyline: {
+      positions: loop,
+      clampToGround: true,
+      width: 4,
+      material: new Cesium.PolylineGlowMaterialProperty({
+        glowPower: 0.16,
+        taperPower: 0.35,
+        color: Cesium.Color.fromCssColorString("#fff200").withAlpha(0.86),
+      }),
+      distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 6500000),
+    },
+  });
+  boundary.fieldTargetPosition = center;
+  boundary.fieldInfoTitle = item.name || item.file;
+}
 function addFilledOverlay(dataSource, entity, positions) {
   const fillEntity = dataSource.entities.add({
     name: `${entity.name || "Field"} yellow fill`,
@@ -420,11 +456,15 @@ async function loadOverviewPins(files) {
         const positions = getPolygonPositions(entity, viewer.clock.currentTime);
         if (positions.length < 3) return;
         filePositions.push(...positions);
+        addOverviewBoundary(overviewDataSource, item, positions);
       });
 
       const center = getCenterFromPositions(filePositions);
       const marker = addCenterPin(overviewDataSource, { name: item.name || item.file }, center, image);
-      if (marker) markerCount += 1;
+      if (marker) {
+        setEntityDistanceDisplay(marker, 0, 6500000);
+        markerCount += 1;
+      }
     } catch (error) {
       console.warn(`Could not read overview KMZ: ${item.file}`, error);
     }
@@ -496,31 +536,85 @@ async function loadKmzFile(file) {
   }
 }
 
+function getKmzItemLabel(item) {
+  return item?.name || item?.file || "Untitled KMZ";
+}
+
+function getKmzItemSource(item) {
+  if (item?.url) return item.url;
+  return `./kmz/${encodeURIComponent(item.file)}`;
+}
+
+function closeKmzDropdown() {
+  kmzDropdown.hidden = true;
+  kmzDropdownButton.setAttribute("aria-expanded", "false");
+}
+
+function openKmzDropdown() {
+  kmzDropdown.hidden = false;
+  kmzDropdownButton.setAttribute("aria-expanded", "true");
+  kmzSearch.focus();
+  kmzSearch.select();
+}
+
+function renderKmzOptions(files, query = "") {
+  const normalizedQuery = query.trim().toLowerCase();
+  const visibleFiles = files
+    .filter((item) => {
+      const label = getKmzItemLabel(item).toLowerCase();
+      const file = String(item?.file || "").toLowerCase();
+      const province = String(item?.province || "").toLowerCase();
+      const project = String(item?.project || "").toLowerCase();
+      return !normalizedQuery || `${label} ${file} ${province} ${project}`.includes(normalizedQuery);
+    })
+    .slice(0, 12);
+
+  kmzTabs.textContent = "";
+  if (visibleFiles.length === 0) {
+    const empty = document.createElement("span");
+    empty.className = "kmz-empty";
+    empty.textContent = "No results";
+    kmzTabs.append(empty);
+    return;
+  }
+
+  visibleFiles.forEach((item) => {
+    const label = getKmzItemLabel(item);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "data-tab";
+    button.textContent = label;
+    button.setAttribute("role", "option");
+    if (activeKmzButton?.dataset?.file === item.file) {
+      button.classList.add("is-active");
+    }
+    button.dataset.file = item.file || label;
+    button.addEventListener("click", () => {
+      kmzSelectedLabel.textContent = label;
+      closeKmzDropdown();
+      showKmzDataSource(getKmzItemSource(item), label, button);
+    });
+    kmzTabs.append(button);
+  });
+}
 async function loadBundledKmzList() {
   try {
     const response = await fetch("./kmz/manifest.json", { cache: "no-store" });
     if (!response.ok) throw new Error("KMZ manifest not found");
 
     const files = await response.json();
+    bundledKmzFiles = Array.isArray(files) ? files : [];
     kmzTabs.textContent = "";
 
-    if (!Array.isArray(files) || files.length === 0) {
+    if (bundledKmzFiles.length === 0) {
+      kmzSelectedLabel.textContent = "No bundled KMZ";
       setKmzStatus("No bundled KMZ");
       return;
     }
 
-    files.forEach((item) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "data-tab";
-      button.textContent = item.name || item.file;
-      button.addEventListener("click", () => {
-        showKmzDataSource(`./kmz/${encodeURIComponent(item.file)}`, item.name || item.file, button);
-      });
-      kmzTabs.append(button);
-    });
-
-    loadOverviewPins(files);
+    kmzSelectedLabel.textContent = "Select data";
+    renderKmzOptions(bundledKmzFiles);
+    loadOverviewPins(bundledKmzFiles);
   } catch (error) {
     setKmzStatus(error?.message || "Could not read KMZ list", true);
   }
@@ -637,6 +731,31 @@ zoomIn.addEventListener("click", () => zoom(0.42));
 zoomOut.addEventListener("click", () => zoom(-0.7));
 uploadKmz.addEventListener("click", () => kmzFile.click());
 kmzFile.addEventListener("change", () => loadKmzFile(kmzFile.files[0]));
+kmzDropdownButton.addEventListener("click", () => {
+  if (kmzDropdown.hidden) {
+    openKmzDropdown();
+  } else {
+    closeKmzDropdown();
+  }
+});
+kmzSearch.addEventListener("input", () => renderKmzOptions(bundledKmzFiles, kmzSearch.value));
+kmzSearch.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeKmzDropdown();
+    kmzDropdownButton.focus();
+    return;
+  }
+  if (event.key === "Enter") {
+    const firstOption = kmzTabs.querySelector(".data-tab");
+    firstOption?.click();
+  }
+});
+document.addEventListener("click", (event) => {
+  if (kmzDropdown.hidden) return;
+  if (event.target === kmzDropdownButton || kmzDropdownButton.contains(event.target)) return;
+  if (kmzDropdown.contains(event.target)) return;
+  closeKmzDropdown();
+});
 
 try {
   init();

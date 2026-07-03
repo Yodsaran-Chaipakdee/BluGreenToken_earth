@@ -159,20 +159,19 @@ body {
 }
 
 .panel-row,
-.data-tabs,
-.data-tabs-list {
+.data-tabs {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
 }
 
-.panel-row,
-.data-tabs-list {
+.panel-row {
   flex-wrap: wrap;
 }
 
 .data-tabs {
+  position: relative;
   padding-top: 2px;
 }
 
@@ -183,11 +182,99 @@ body {
   text-transform: uppercase;
 }
 
+.kmz-selector {
+  position: relative;
+  min-width: min(280px, calc(100vw - 150px));
+}
+
+.kmz-select-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 0 12px;
+  text-align: left;
+}
+
+.kmz-select-button.is-active {
+  color: #07111f;
+  background: #bae6fd;
+}
+
+.kmz-select-arrow {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  opacity: 0.78;
+}
+
+.kmz-dropdown {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  z-index: 8;
+  width: min(360px, calc(100vw - 32px));
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  background: rgba(3, 7, 18, 0.94);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(16px);
+}
+
+.kmz-search {
+  width: 100%;
+  height: 36px;
+  margin-bottom: 8px;
+  padding: 0 10px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 8px;
+  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.88);
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.kmz-search:focus {
+  border-color: rgba(186, 230, 253, 0.72);
+}
+
+.data-tabs-list {
+  display: grid;
+  gap: 6px;
+  max-height: 292px;
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+.data-tabs-list::-webkit-scrollbar {
+  display: none;
+}
+
+.data-tab {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  padding: 0 10px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .data-tab.is-active {
   color: #07111f;
   background: #bae6fd;
 }
 
+.kmz-empty {
+  padding: 8px 10px;
+  color: rgba(226, 232, 240, 0.62);
+  font-size: 13px;
+}
 .zoom {
   position: fixed;
   right: 16px;
