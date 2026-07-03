@@ -1,10 +1,14 @@
 [
-  {
-    "name": "30-VSD-field-map",
-    "file": "30-VSD-field-map.kmz"
-  },
-  {
-    "name": "31-VSD-field-map",
-    "file": "31-VSD-field-map.kmz"
-  }
+    {
+        "name":  "30-VSD-field-map",
+        "file":  "30-VSD-field-map.kmz"
+    },
+    {
+        "name":  "31-VSD-field-map",
+        "file":  "31-VSD-field-map.kmz"
+    },
+    {
+        "name":  "67-STC-field-map",
+        "file":  "67-STC-field-map.kmz"
+    }
 ]

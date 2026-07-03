@@ -9,14 +9,52 @@ const uploadKmz = document.querySelector("#uploadKmz");
 const kmzFile = document.querySelector("#kmzFile");
 const kmzStatus = document.querySelector("#kmzStatus");
 const kmzTabs = document.querySelector("#kmzTabs");
+const fieldInfoCard = document.querySelector("#fieldInfoCard");
+const fieldInfoTitle = document.querySelector("#fieldInfoTitle");
 
+const FIELD_FLY_HEIGHT_METERS = 500;
+const LOGO_PATH = "./src/Logo.png";
 let viewer;
 let spinning = true;
 let userIsInteracting = false;
 let resumeSpinAt = 0;
 let uploadedDataSource;
+let overviewDataSource;
 let activeKmzButton;
+let fieldPinImagePromise;
+let activeFieldInfoTitle = "-";
+let fieldInfoHideLockedUntil = 0;
+function normalizeFieldTitle(name) {
+  if (!name) return "-";
+  return String(name)
+    .replace(/\.kmz$/i, "")
+    .replace(/\s+(boundary glow|boundary highlight|yellow fill|center marker)$/i, "")
+    .replace(/\s+boundary\s*\d*$/i, "")
+    .trim() || "-";
+}
 
+function showFieldInfo(title) {
+  activeFieldInfoTitle = normalizeFieldTitle(title);
+  fieldInfoHideLockedUntil = performance.now() + 2500;
+  fieldInfoTitle.textContent = activeFieldInfoTitle;
+  fieldInfoCard.classList.add("is-visible");
+}
+
+function hideFieldInfo() {
+  fieldInfoCard.classList.remove("is-visible");
+}
+
+function syncFieldInfoVisibility() {
+  const height = viewer.camera.positionCartographic.height;
+  if (height > 5000 && performance.now() > fieldInfoHideLockedUntil) {
+    hideFieldInfo();
+    return;
+  }
+
+  if (height <= 5000 && activeFieldInfoTitle !== "-") {
+    fieldInfoCard.classList.add("is-visible");
+  }
+}
 function showError(error) {
   loader.classList.add("is-error");
   loader.textContent = "";
@@ -37,6 +75,7 @@ function hideLoader() {
 function easeInOutCubic(time) {
   return time < 0.5 ? 4 * time * time * time : 1 - Math.pow(-2 * time + 2, 3) / 2;
 }
+
 
 function updateReadout() {
   const cartographic = viewer.camera.positionCartographic;
@@ -77,7 +116,7 @@ function flyToOrbit() {
 }
 
 function zoom(multiplier) {
-  const height = Math.max(viewer.camera.positionCartographic.height, 1000);
+  const height = Math.max(viewer.camera.positionCartographic.height, 80);
   viewer.camera.zoomIn(height * multiplier);
 }
 
@@ -90,6 +129,309 @@ function setKmzStatus(message, isError = false) {
   kmzStatus.classList.toggle("is-error", isError);
 }
 
+function createFieldPinImage(logo) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 112;
+  canvas.height = 138;
+
+  const ctx = canvas.getContext("2d");
+  const gradient = ctx.createLinearGradient(26, 12, 86, 118);
+  gradient.addColorStop(0, "#38bdf8");
+  gradient.addColorStop(0.48, "#0b63ce");
+  gradient.addColorStop(1, "#07328f");
+
+  ctx.save();
+  ctx.shadowColor = "rgba(14, 165, 233, 0.76)";
+  ctx.shadowBlur = 18;
+  ctx.shadowOffsetY = 4;
+  ctx.beginPath();
+  ctx.arc(56, 48, 38, 0, Math.PI * 2);
+  ctx.moveTo(56, 130);
+  ctx.lineTo(34, 78);
+  ctx.quadraticCurveTo(56, 96, 78, 78);
+  ctx.closePath();
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  ctx.restore();
+
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = "rgba(219, 234, 254, 0.98)";
+  ctx.beginPath();
+  ctx.arc(56, 48, 38, 0, Math.PI * 2);
+  ctx.moveTo(56, 130);
+  ctx.lineTo(34, 78);
+  ctx.quadraticCurveTo(56, 96, 78, 78);
+  ctx.closePath();
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(56, 48, 27, 0, Math.PI * 2);
+  ctx.fillStyle = "#ffffff";
+  ctx.fill();
+
+  if (logo) {
+    const logoSize = 41;
+    ctx.drawImage(logo, 56 - logoSize / 2, 48 - logoSize / 2, logoSize, logoSize);
+  } else {
+    ctx.fillStyle = "#0f3d91";
+    ctx.font = "700 24px Inter, Arial, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("BG", 56, 48);
+  }
+
+  return canvas.toDataURL("image/png");
+}
+
+function getFieldPinImage() {
+  if (!fieldPinImagePromise) {
+    fieldPinImagePromise = new Promise((resolve) => {
+      const logo = new Image();
+      logo.onload = () => resolve(createFieldPinImage(logo));
+      logo.onerror = () => resolve(createFieldPinImage());
+      logo.src = LOGO_PATH;
+    });
+  }
+
+  return fieldPinImagePromise;
+}
+function getValue(property, time) {
+  if (!property) return undefined;
+  return typeof property.getValue === "function" ? property.getValue(time) : property;
+}
+
+
+function getPolygonPositions(entity, time) {
+  const hierarchy = getValue(entity.polygon?.hierarchy, time);
+  if (!hierarchy) return [];
+  return hierarchy.positions || hierarchy;
+}
+
+
+function closePositions(positions) {
+  if (positions.length < 2) return positions;
+  const first = positions[0];
+  const last = positions[positions.length - 1];
+  if (Cesium.Cartesian3.equalsEpsilon(first, last, Cesium.Math.EPSILON7)) return positions;
+  return [...positions, first];
+}
+
+function getCenterFromPositions(positions) {
+  if (!positions.length) return undefined;
+
+  const sphere = Cesium.BoundingSphere.fromPoints(positions);
+  const cartographic = Cesium.Cartographic.fromCartesian(sphere.center);
+  return Cesium.Cartesian3.fromRadians(cartographic.longitude, cartographic.latitude, 0);
+}
+
+function getEntityTargetPosition(entity) {
+  if (!entity) return undefined;
+  if (entity.fieldTargetPosition) return entity.fieldTargetPosition;
+
+  const time = viewer.clock.currentTime;
+  const position = getValue(entity.position, time);
+  if (position) return position;
+
+  const polygonPositions = getPolygonPositions(entity, time);
+  if (polygonPositions.length) return getCenterFromPositions(polygonPositions);
+
+  const polylinePositions = getValue(entity.polyline?.positions, time);
+  if (polylinePositions?.length) return getCenterFromPositions(polylinePositions);
+
+  return undefined;
+}
+
+function flyToFieldEntity(entity, title) {
+  const infoTitle = title || entity.fieldInfoTitle || entity.name || activeFieldInfoTitle;
+  showFieldInfo(infoTitle);
+  const target = getEntityTargetPosition(entity);
+  if (!target) return false;
+
+  const cartographic = Cesium.Cartographic.fromCartesian(target);
+  spinning = false;
+  toggleSpin.textContent = "Play";
+  viewer.camera.cancelFlight();
+
+  viewer.camera.flyTo({
+    destination: Cesium.Cartesian3.fromRadians(
+      cartographic.longitude,
+      cartographic.latitude,
+      FIELD_FLY_HEIGHT_METERS,
+    ),
+    orientation: {
+      heading: viewer.camera.heading,
+      pitch: Cesium.Math.toRadians(-86),
+      roll: 0,
+    },
+    duration: 1.35,
+    easingFunction: easeInOutCubic,
+    complete: () => showFieldInfo(infoTitle),
+  });
+
+  return true;
+}
+
+function setCloseRangeVisibility(graphic, near = 0, far = 120000) {
+  if (!graphic) return;
+  graphic.distanceDisplayCondition = new Cesium.DistanceDisplayCondition(near, far);
+}
+
+function stylePlacemarkVisibility(entity) {
+  if (entity.billboard) entity.billboard.show = false;
+  if (entity.label) entity.label.show = false;
+  if (entity.point) entity.point.show = false;
+}
+function addFilledOverlay(dataSource, entity, positions) {
+  const fillEntity = dataSource.entities.add({
+    name: `${entity.name || "Field"} yellow fill`,
+    polygon: {
+      hierarchy: positions,
+      fill: true,
+      outline: false,
+      material: new Cesium.ColorMaterialProperty(
+        Cesium.Color.fromCssColorString("#ffe600").withAlpha(0.4),
+      ),
+      heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+      classificationType: Cesium.ClassificationType.TERRAIN,
+      zIndex: 10,
+    },
+  });
+  fillEntity.fieldTargetPosition = getCenterFromPositions(positions);
+  fillEntity.fieldInfoTitle = entity.fieldInfoTitle || entity.name;
+}
+function addGlowingBoundary(dataSource, entity, positions) {
+  const loop = closePositions(positions);
+  if (loop.length < 2) return;
+
+  const center = getCenterFromPositions(positions);
+  entity.fieldTargetPosition = center;
+
+  const glowEntity = dataSource.entities.add({
+    name: `${entity.name || "Field"} boundary glow`,
+    polyline: {
+      positions: loop,
+      clampToGround: true,
+      width: 13,
+      material: new Cesium.PolylineGlowMaterialProperty({
+        glowPower: 0.22,
+        taperPower: 0.35,
+        color: Cesium.Color.fromCssColorString("#ffe600").withAlpha(0.68),
+      }),
+    },
+  });
+  glowEntity.fieldTargetPosition = center;
+  glowEntity.fieldInfoTitle = entity.fieldInfoTitle || entity.name;
+
+  const highlightEntity = dataSource.entities.add({
+    name: `${entity.name || "Field"} boundary highlight`,
+    polyline: {
+      positions: loop,
+      clampToGround: true,
+      width: 5,
+      material: Cesium.Color.fromCssColorString("#fff200"),
+    },
+  });
+  highlightEntity.fieldTargetPosition = center;
+  highlightEntity.fieldInfoTitle = entity.fieldInfoTitle || entity.name;
+}
+
+function addCenterPin(dataSource, entity, center, image) {
+  if (!center) return;
+
+  const marker = dataSource.entities.add({
+    name: `${entity.name || "Field"} center marker`,
+    position: center,
+    billboard: {
+      image: image || createFieldPinImage(),
+      width: 76,
+      height: 94,
+      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+      heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      scaleByDistance: new Cesium.NearFarScalar(500, 1.22, 18000000, 0.82),
+    },
+  });
+  marker.fieldTargetPosition = center;
+  marker.fieldInfoTitle = entity.fieldInfoTitle || entity.name;
+  return marker;
+}
+async function styleKmzDataSource(dataSource) {
+  const image = await getFieldPinImage();
+  const time = viewer.clock.currentTime;
+  const entities = dataSource.entities.values.slice();
+  let fieldCount = 0;
+  const fieldEntities = [];
+
+  entities.forEach((entity) => {
+    stylePlacemarkVisibility(entity);
+
+    if (entity.polyline) {
+      entity.polyline.width = 6;
+      entity.polyline.clampToGround = true;
+      entity.polyline.material = new Cesium.PolylineGlowMaterialProperty({
+        glowPower: 0.18,
+        color: Cesium.Color.fromCssColorString("#fff200"),
+      });
+    }
+
+    if (!entity.polygon) return;
+
+    const positions = getPolygonPositions(entity, time);
+    if (positions.length < 3) return;
+
+    fieldCount += 1;
+    entity.fieldInfoTitle = entity.name;
+    fieldEntities.push(entity);
+    entity.polygon.fill = false;
+    entity.polygon.outline = false;
+    entity.polygon.heightReference = Cesium.HeightReference.CLAMP_TO_GROUND;
+
+    const center = getCenterFromPositions(positions);
+    entity.fieldTargetPosition = center;
+    addFilledOverlay(dataSource, entity, positions);
+    addGlowingBoundary(dataSource, entity, positions);
+    addCenterPin(dataSource, entity, center, image);
+  });
+
+  dataSource.fieldEntities = fieldEntities;
+  return fieldCount;
+}
+async function loadOverviewPins(files) {
+  if (overviewDataSource) {
+    viewer.dataSources.remove(overviewDataSource, true);
+  }
+
+  const image = await getFieldPinImage();
+  overviewDataSource = new Cesium.CustomDataSource("overview field markers");
+  await viewer.dataSources.add(overviewDataSource);
+
+  let markerCount = 0;
+  for (const item of files) {
+    try {
+      const source = `./kmz/${encodeURIComponent(item.file)}`;
+      const dataSource = await Cesium.KmlDataSource.load(source, {
+        camera: viewer.scene.camera,
+        canvas: viewer.scene.canvas,
+        clampToGround: true,
+      });
+
+      const filePositions = [];
+      dataSource.entities.values.forEach((entity) => {
+        const positions = getPolygonPositions(entity, viewer.clock.currentTime);
+        if (positions.length < 3) return;
+        filePositions.push(...positions);
+      });
+
+      const center = getCenterFromPositions(filePositions);
+      const marker = addCenterPin(overviewDataSource, { name: item.name || item.file }, center, image);
+      if (marker) markerCount += 1;
+    } catch (error) {
+      console.warn(`Could not read overview KMZ: ${item.file}`, error);
+    }
+  }
+
+  setKmzStatus(markerCount > 0 ? `Ready: ${markerCount} field markers` : "Ready: bundled KMZ");
+}
 async function showKmzDataSource(source, label, activeButton) {
   setKmzStatus("Loading...");
   spinning = false;
@@ -115,17 +457,24 @@ async function showKmzDataSource(source, label, activeButton) {
       return;
     }
 
+    const fieldCount = await styleKmzDataSource(dataSource);
+
     if (activeKmzButton) {
       activeKmzButton.classList.remove("is-active");
     }
     activeKmzButton = activeButton || null;
     activeKmzButton?.classList.add("is-active");
 
-    setKmzStatus(`${label} (${entityCount})`);
-    await viewer.flyTo(dataSource, {
-      duration: 2.8,
-      offset: new Cesium.HeadingPitchRange(0, Cesium.Math.toRadians(-55), 0),
-    });
+    setKmzStatus(`${label} (${fieldCount || entityCount})`);
+    showFieldInfo(label);
+    if (dataSource.fieldEntities?.length === 1) {
+      flyToFieldEntity(dataSource.fieldEntities[0], label);
+    } else {
+      await viewer.flyTo(dataSource, {
+        duration: 2.8,
+        offset: new Cesium.HeadingPitchRange(0, Cesium.Math.toRadians(-55), 0),
+      });
+    }
   } catch (error) {
     setKmzStatus(error?.message || "Could not load KMZ", true);
   }
@@ -171,14 +520,11 @@ async function loadBundledKmzList() {
       kmzTabs.append(button);
     });
 
-    if (files.length === 1) {
-      setKmzStatus("Ready: bundled KMZ");
-    }
+    loadOverviewPins(files);
   } catch (error) {
     setKmzStatus(error?.message || "Could not read KMZ list", true);
   }
 }
-
 
 function wireControls() {
   const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
@@ -190,6 +536,12 @@ function wireControls() {
     userIsInteracting = false;
     pauseSpinBriefly();
   }, Cesium.ScreenSpaceEventType.LEFT_UP);
+  handler.setInputAction((movement) => {
+    const picked = viewer.scene.pick(movement.position);
+    if (!picked?.id) return;
+    showFieldInfo(picked.id.fieldInfoTitle || picked.id.name);
+    flyToFieldEntity(picked.id);
+  }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
   handler.setInputAction(() => {
     userIsInteracting = true;
     pauseSpinBriefly();
@@ -248,7 +600,7 @@ function init() {
   viewer.scene.screenSpaceCameraController.inertiaSpin = 0.92;
   viewer.scene.screenSpaceCameraController.inertiaTranslate = 0.86;
   viewer.scene.screenSpaceCameraController.inertiaZoom = 0.84;
-  viewer.scene.screenSpaceCameraController.minimumZoomDistance = 180;
+  viewer.scene.screenSpaceCameraController.minimumZoomDistance = 40;
   viewer.scene.screenSpaceCameraController.maximumZoomDistance = 45000000;
   viewer.camera.constrainedAxis = Cesium.Cartesian3.UNIT_Z;
 
@@ -269,6 +621,7 @@ function init() {
       viewer.camera.rotate(Cesium.Cartesian3.UNIT_Z, -0.00012);
     }
     updateReadout();
+    syncFieldInfoVisibility();
   });
 
   setTimeout(hideLoader, 900);
