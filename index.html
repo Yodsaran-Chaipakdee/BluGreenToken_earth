@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blu Green Token Explorer</title>
+    <link
+      rel="stylesheet"
+      href="./vendor/cesium/Widgets/widgets.css"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script>
+      window.CESIUM_BASE_URL = "./vendor/cesium/";
+    </script>
+    <script src="./vendor/cesium/Cesium.js"></script>
+  </head>
+  <body>
+    <div id="cesiumContainer" aria-label="Interactive 3D Earth"></div>
+
+    <div id="loader" class="loader" role="status">
+      <strong>Loading Earth</strong>
+      <span>Satellite imagery, atmosphere, stars, and cinematic camera.</span>
+    </div>
+
+    <header class="topbar">
+      <div class="brand">
+        <img class="brand-logo" src="./src/Logo.png" alt="Blu Green Token Explorer logo" />
+        <span>Blu Green Token Explorer</span>
+      </div>
+      <div class="coord-readout" id="coordReadout">Lat 13.7563, Lon 100.5018</div>
+    </header>
+
+    <aside class="panel">
+      <div class="panel-row">
+        <button id="flyThailand" type="button">Thailand</button>
+        <button id="flyOrbit" type="button">Orbit</button>
+        <button id="toggleSpin" type="button">Pause</button>
+        <button id="uploadKmz" type="button">Upload KMZ</button>
+      </div>
+      <div class="data-tabs" aria-label="KMZ data files">
+        <span class="data-tabs-label">Data</span>
+        <div id="kmzTabs" class="data-tabs-list"></div>
+      </div>
+      <input id="kmzFile" class="file-input" type="file" accept=".kmz,.kml,application/vnd.google-earth.kmz,application/vnd.google-earth.kml+xml" />
+      <span id="kmzStatus" class="upload-status" aria-live="polite"></span>
+    </aside>
+
+    <div class="zoom">
+      <button id="zoomIn" type="button" aria-label="Zoom in">+</button>
+      <button id="zoomOut" type="button" aria-label="Zoom out">-</button>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

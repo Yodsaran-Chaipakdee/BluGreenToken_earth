@@ -1,0 +1,255 @@
+:root {
+  color-scheme: dark;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+body {
+  color: #f8fafc;
+}
+
+#cesiumContainer {
+  position: fixed;
+  inset: 0;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  cursor: grab;
+}
+
+#cesiumContainer:active {
+  cursor: grabbing;
+}
+
+.cesium-viewer,
+.cesium-viewer-cesiumWidgetContainer,
+.cesium-widget,
+.cesium-widget canvas {
+  width: 100%;
+  height: 100%;
+}
+
+
+
+.cesium-viewer-bottom,
+.cesium-credit-logoContainer,
+.cesium-credit-textContainer,
+.cesium-credit-expand-link {
+  display: none !important;
+}
+
+.loader {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 10;
+  width: min(380px, calc(100vw - 40px));
+  transform: translate(-50%, -50%);
+  padding: 16px 18px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.72);
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(16px);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.loader strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 15px;
+}
+
+.loader span {
+  display: block;
+}
+
+.loader.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+
+.loader.is-error {
+  border-color: rgba(248, 113, 113, 0.48);
+  color: #fecaca;
+}
+
+.topbar {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  top: 14px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.coord-readout,
+.panel,
+.zoom {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(3, 7, 18, 0.62);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(14px);
+}
+
+.brand {
+  display: flex;
+  border: 1px solid rgba(30, 64, 175, 0.16);
+  border-radius: 8px;
+  color: #123c8c;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+  backdrop-filter: blur(14px);
+  align-items: center;
+  gap: 14px;
+  min-height: 104px;
+  padding: 8px 18px 8px 10px;
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.brand-logo {
+  width: 88px;
+  height: 88px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  border-radius: 8px;
+  filter: drop-shadow(0 0 22px rgba(56, 189, 248, 0.5));
+}
+
+.coord-readout {
+  min-width: 280px;
+  padding: 10px 12px;
+  color: rgba(226, 232, 240, 0.84);
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 12px;
+  text-align: right;
+}
+
+.panel {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 5;
+  display: grid;
+  gap: 8px;
+  max-width: min(720px, calc(100vw - 96px));
+  padding: 8px;
+}
+
+.panel-row,
+.data-tabs,
+.data-tabs-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.panel-row,
+.data-tabs-list {
+  flex-wrap: wrap;
+}
+
+.data-tabs {
+  padding-top: 2px;
+}
+
+.data-tabs-label {
+  color: rgba(226, 232, 240, 0.62);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.data-tab.is-active {
+  color: #07111f;
+  background: #bae6fd;
+}
+
+.zoom {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 5;
+  display: grid;
+  overflow: hidden;
+}
+
+button {
+  min-width: 44px;
+  height: 38px;
+  border: 0;
+  border-radius: 7px;
+  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.88);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.zoom button {
+  width: 42px;
+  border-radius: 0;
+  font-size: 22px;
+  line-height: 1;
+}
+
+button:hover {
+  background: rgba(30, 41, 59, 0.94);
+}
+
+@media (max-width: 680px) {
+  .coord-readout {
+    display: none;
+  }
+
+  .panel {
+    right: 16px;
+    justify-content: center;
+  }
+}
+
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.upload-status {
+  align-self: center;
+  max-width: 220px;
+  overflow: hidden;
+  color: rgba(226, 232, 240, 0.78);
+  font-size: 12px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-status.is-error {
+  color: #fecaca;
+}
