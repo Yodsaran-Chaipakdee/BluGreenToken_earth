@@ -5,6 +5,7 @@ const flyThailand = document.querySelector("#flyThailand");
 const flyOrbit = document.querySelector("#flyOrbit");
 const zoomIn = document.querySelector("#zoomIn");
 const zoomOut = document.querySelector("#zoomOut");
+const compassNorth = document.querySelector("#compassNorth");
 const uploadKmz = document.querySelector("#uploadKmz");
 const kmzFile = document.querySelector("#kmzFile");
 const kmzStatus = document.querySelector("#kmzStatus");
@@ -123,6 +124,49 @@ function flyToOrbit() {
 function zoom(multiplier) {
   const height = Math.max(viewer.camera.positionCartographic.height, 80);
   viewer.camera.zoomIn(height * multiplier);
+}
+
+function updateCompass() {
+  const headingDegrees = Cesium.Math.toDegrees(viewer.camera.heading);
+  document.documentElement.style.setProperty("--camera-heading", `${headingDegrees}deg`);
+}
+
+function getViewportCenterTarget() {
+  const canvas = viewer.scene.canvas;
+  const center = new Cesium.Cartesian2(canvas.clientWidth / 2, canvas.clientHeight / 2);
+  const ray = viewer.camera.getPickRay(center);
+  if (!ray) return undefined;
+
+  return viewer.scene.globe.pick(ray, viewer.scene) || viewer.camera.pickEllipsoid(center, viewer.scene.globe.ellipsoid);
+}
+
+function resetNorth() {
+  spinning = false;
+  toggleSpin.textContent = "Play";
+  pauseSpinBriefly();
+  viewer.camera.cancelFlight();
+
+  const target = getViewportCenterTarget();
+  if (!target) {
+    viewer.camera.flyTo({
+      destination: viewer.camera.positionWC,
+      orientation: {
+        heading: 0,
+        pitch: viewer.camera.pitch,
+        roll: 0,
+      },
+      duration: 0.85,
+      easingFunction: easeInOutCubic,
+    });
+    return;
+  }
+
+  const range = Cesium.Cartesian3.distance(viewer.camera.positionWC, target);
+  viewer.camera.flyToBoundingSphere(new Cesium.BoundingSphere(target, 1), {
+    duration: 0.85,
+    offset: new Cesium.HeadingPitchRange(0, viewer.camera.pitch, range),
+    easingFunction: easeInOutCubic,
+  });
 }
 
 function pauseSpinBriefly() {
@@ -715,6 +759,7 @@ function init() {
       viewer.camera.rotate(Cesium.Cartesian3.UNIT_Z, -0.00012);
     }
     updateReadout();
+    updateCompass();
     syncFieldInfoVisibility();
   });
 
@@ -727,6 +772,7 @@ toggleSpin.addEventListener("click", () => {
 });
 flyThailand.addEventListener("click", flyToThailand);
 flyOrbit.addEventListener("click", flyToOrbit);
+compassNorth.addEventListener("click", resetNorth);
 zoomIn.addEventListener("click", () => zoom(0.42));
 zoomOut.addEventListener("click", () => zoom(-0.7));
 uploadKmz.addEventListener("click", () => kmzFile.click());

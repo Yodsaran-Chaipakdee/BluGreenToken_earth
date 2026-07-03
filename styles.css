@@ -277,8 +277,9 @@ body {
 }
 .zoom {
   position: fixed;
-  right: 16px;
-  bottom: 16px;
+  left: 16px;
+  right: auto;
+  bottom: 168px;
   z-index: 5;
   display: grid;
   overflow: hidden;
@@ -301,6 +302,52 @@ button {
   border-radius: 0;
   font-size: 22px;
   line-height: 1;
+}
+
+.compass-button {
+  display: grid;
+  place-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.compass-dial {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border: 1px solid rgba(186, 230, 253, 0.9);
+  border-radius: 999px;
+  color: #bae6fd;
+  font-size: 10px;
+  font-weight: 850;
+  transform: rotate(var(--camera-heading, 0deg));
+  transition: transform 180ms ease;
+}
+
+.compass-dial::before {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 9px solid #38bdf8;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.compass-dial span {
+  transform: rotate(calc(var(--camera-heading, 0deg) * -1));
+}
+
+@media (max-width: 860px) {
+  .zoom {
+    left: 12px;
+    right: auto;
+    bottom: 156px;
+  }
 }
 
 button:hover {
@@ -437,7 +484,7 @@ button:hover {
   .field-info-card {
     top: auto;
     right: 12px;
-    bottom: 112px;
+    bottom: 152px;
     width: min(320px, calc(100vw - 24px));
     max-height: 42vh;
   }
