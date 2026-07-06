@@ -489,3 +489,634 @@ button:hover {
     max-height: 42vh;
   }
 }
+@media (max-width: 680px) {
+  html,
+  body {
+    overflow: hidden;
+  }
+
+  .topbar {
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    align-items: flex-start;
+  }
+
+  .brand {
+    width: min(310px, calc(100vw - 20px));
+    min-height: 58px;
+    gap: 8px;
+    padding: 6px 10px 6px 8px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.1;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.16);
+  }
+
+  .brand-logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 6px;
+  }
+
+  .coord-readout {
+    display: none;
+  }
+
+  .field-info-card {
+    left: 88px;
+    right: 10px;
+    bottom: 180px;
+    top: auto;
+    width: auto;
+    max-height: min(35vh, 260px);
+    padding: 14px;
+    border-radius: 14px;
+    transform: translateY(12px);
+  }
+
+  .field-info-card.is-visible {
+    transform: translateY(0);
+  }
+
+  .field-info-card h2 {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-bottom: 10px;
+    font-size: 24px;
+    line-height: 1.05;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .metric-list {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .metric-card {
+    padding: 9px 11px;
+    border-radius: 10px;
+  }
+
+  .metric-card span {
+    margin-bottom: 3px;
+    font-size: 11px;
+  }
+
+  .metric-card strong {
+    font-size: 18px;
+  }
+
+  .info-list {
+    display: none;
+  }
+
+  .panel {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    width: auto;
+    max-width: none;
+    gap: 8px;
+    padding: 8px 9px 9px;
+    border-radius: 10px;
+  }
+
+  .panel-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+  }
+
+  .panel-row button {
+    min-width: 0;
+    width: 100%;
+    height: 38px;
+    padding: 0 8px;
+    overflow: hidden;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .data-tabs {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 7px;
+    width: 100%;
+    align-items: center;
+  }
+
+  .data-tabs-label {
+    font-size: 11px;
+  }
+
+  .kmz-selector {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .kmz-select-button {
+    height: 42px;
+    min-width: 0;
+    padding: 0 10px;
+    font-size: 13px;
+  }
+
+  #kmzSelectedLabel {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .kmz-dropdown {
+    left: -49px;
+    bottom: calc(100% + 10px);
+    width: calc(100vw - 20px);
+    max-height: min(52vh, 390px);
+    padding: 8px;
+    border-radius: 12px;
+  }
+
+  .kmz-search {
+    height: 42px;
+    font-size: 14px;
+  }
+
+  .data-tabs-list {
+    max-height: min(38vh, 280px);
+  }
+
+  .data-tab {
+    height: 44px;
+    padding: 0 12px;
+    font-size: 14px;
+  }
+
+  .upload-status {
+    max-width: 100%;
+    font-size: 11px;
+  }
+
+  .zoom {
+    left: 10px;
+    bottom: 176px;
+    border-radius: 10px;
+  }
+
+  .zoom button {
+    width: 44px;
+    height: 42px;
+  }
+}
+
+@media (max-width: 420px) {
+  .brand {
+    width: min(260px, calc(100vw - 20px));
+    font-size: 13px;
+  }
+
+  .brand-logo {
+    width: 44px;
+    height: 44px;
+  }
+
+  .field-info-card {
+    left: 72px;
+    bottom: 172px;
+    max-height: min(32vh, 230px);
+    padding: 12px;
+  }
+
+  .field-info-card h2 {
+    font-size: 21px;
+  }
+
+  .panel-row button {
+    padding: 0 6px;
+    font-size: 11px;
+  }
+
+  .zoom {
+    bottom: 168px;
+  }
+}
+
+/* Mobile map-first layout overrides */
+@media (max-width: 680px) {
+  .topbar {
+    top: 8px;
+    left: 8px;
+    right: auto;
+  }
+
+  .brand {
+    width: auto;
+    min-height: 44px;
+    max-width: calc(100vw - 16px);
+    gap: 7px;
+    padding: 5px 10px 5px 6px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 8px 22px rgba(2, 6, 23, 0.18);
+  }
+
+  .brand-logo {
+    width: 38px;
+    height: 38px;
+  }
+
+  .field-info-card {
+    left: 64px;
+    right: 10px;
+    bottom: 144px;
+    max-height: none;
+    min-height: 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 14px 38px rgba(2, 6, 23, 0.22);
+  }
+
+  .field-info-card h2 {
+    margin: 0;
+    font-size: 19px;
+    line-height: 1.08;
+    -webkit-line-clamp: 2;
+  }
+
+  .field-info-card .metric-list,
+  .field-info-card .info-list {
+    display: none;
+  }
+
+  .panel {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    gap: 6px;
+    padding: 7px;
+    border-radius: 10px;
+    background: rgba(3, 7, 18, 0.76);
+  }
+
+  .panel-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .panel-row button {
+    height: 34px;
+    padding: 0 6px;
+    border-radius: 7px;
+    font-size: 11px;
+  }
+
+  .data-tabs {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .kmz-select-button {
+    height: 36px;
+    border-radius: 7px;
+    font-size: 12px;
+  }
+
+  .upload-status {
+    line-height: 1.1;
+  }
+
+  .zoom {
+    left: 8px;
+    bottom: 140px;
+    background: rgba(3, 7, 18, 0.72);
+  }
+
+  .zoom button {
+    width: 40px;
+    height: 38px;
+  }
+
+  .compass-dial {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+@media (max-width: 420px) {
+  .brand span {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .field-info-card {
+    left: 58px;
+    bottom: 138px;
+    padding: 9px 10px;
+  }
+
+  .field-info-card h2 {
+    font-size: 18px;
+  }
+
+  .panel-row button {
+    font-size: 10.5px;
+  }
+
+  .zoom {
+    bottom: 134px;
+  }
+}
+
+/* Mobile: merge compass/zoom into the bottom control cluster */
+@media (max-width: 680px) {
+  .zoom {
+    left: 8px;
+    bottom: 8px;
+    z-index: 7;
+    overflow: hidden;
+    border-radius: 10px;
+    background: rgba(3, 7, 18, 0.8);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.26);
+  }
+
+  .zoom button {
+    width: 42px;
+    height: 36px;
+  }
+
+  .panel {
+    left: 56px;
+    right: 8px;
+    bottom: 8px;
+    z-index: 6;
+    min-height: 0;
+    padding: 7px;
+  }
+
+  .panel-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .panel-row button {
+    height: 34px;
+  }
+
+  .data-tabs {
+    grid-template-columns: 36px minmax(0, 1fr);
+  }
+
+  .kmz-dropdown {
+    left: calc(-48px - 7px);
+    bottom: calc(100% + 8px);
+    width: calc(100vw - 16px);
+    max-height: min(42vh, 300px);
+    padding: 7px;
+  }
+
+  .data-tabs-list {
+    max-height: min(30vh, 210px);
+  }
+
+  .data-tab {
+    height: 40px;
+  }
+
+  .field-info-card {
+    bottom: 118px;
+  }
+}
+
+@media (max-width: 420px) {
+  .panel {
+    left: 54px;
+  }
+
+  .zoom {
+    left: 8px;
+    bottom: 8px;
+  }
+
+  .zoom button {
+    width: 40px;
+    height: 35px;
+  }
+
+  .kmz-dropdown {
+    left: calc(-46px - 7px);
+    max-height: min(40vh, 280px);
+  }
+
+  .data-tabs-list {
+    max-height: min(28vh, 190px);
+  }
+
+  .field-info-card {
+    left: 58px;
+    bottom: 116px;
+  }
+}
+
+/* Touch-friendly plot info toggle */
+#cesiumContainer,
+.cesium-widget canvas {
+  touch-action: none;
+}
+
+button,
+.kmz-search,
+.kmz-dropdown,
+.panel,
+.zoom,
+.field-info-card {
+  touch-action: manipulation;
+}
+
+.field-info-toggle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: none;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  border-radius: 999px;
+  background: rgba(18, 60, 140, 0.1);
+  color: #123c8c;
+}
+
+.field-info-toggle::before,
+.field-info-toggle::after {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  content: "";
+  transform: translate(-50%, -50%);
+}
+
+.field-info-toggle::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+.field-info-card:not(.is-collapsed) .field-info-toggle::after {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+@media (max-width: 680px) {
+  .field-info-toggle {
+    display: grid;
+    place-items: center;
+  }
+
+  .field-info-card {
+    padding-right: 46px;
+  }
+
+  .field-info-card.is-collapsed {
+    left: 56px;
+    right: 8px;
+    bottom: 104px;
+    width: auto;
+    padding: 8px 44px 8px 10px;
+    background: rgba(255, 255, 255, 0.84);
+  }
+
+  .field-info-card.is-collapsed h2 {
+    display: block;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .field-info-card.is-collapsed .metric-list,
+  .field-info-card.is-collapsed .info-list {
+    display: none;
+  }
+
+  .field-info-card:not(.is-collapsed) {
+    bottom: 118px;
+  }
+
+  .kmz-dropdown {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .data-tabs-list {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 420px) {
+  .field-info-card.is-collapsed {
+    left: 54px;
+    bottom: 100px;
+  }
+
+  .field-info-card:not(.is-collapsed) {
+    bottom: 116px;
+  }
+}
+
+/* Mobile plot info card: keep it above bottom controls and polish toggle */
+@media (max-width: 680px) {
+  .field-info-card,
+  .field-info-card.is-collapsed,
+  .field-info-card:not(.is-collapsed) {
+    left: 82px;
+    right: 10px;
+    bottom: 152px;
+    padding: 9px 54px 9px 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 16px 42px rgba(2, 6, 23, 0.24);
+  }
+
+  .field-info-card h2,
+  .field-info-card.is-collapsed h2 {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .field-info-toggle {
+    top: 50%;
+    right: 8px;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    color: #dbeafe;
+    background: #123c8c;
+    box-shadow: 0 8px 18px rgba(18, 60, 140, 0.28);
+    transform: translateY(-50%);
+  }
+
+  .field-info-toggle:hover,
+  .field-info-toggle:focus-visible {
+    background: #1d4ed8;
+  }
+
+  .field-info-toggle::before,
+  .field-info-toggle::after {
+    width: 13px;
+    height: 2px;
+    background: currentColor;
+  }
+
+  .field-info-card:not(.is-collapsed) {
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
+
+  .field-info-card:not(.is-collapsed) h2 {
+    display: -webkit-box;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .panel {
+    padding-top: 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .field-info-card,
+  .field-info-card.is-collapsed,
+  .field-info-card:not(.is-collapsed) {
+    left: 74px;
+    right: 8px;
+    bottom: 148px;
+    padding-right: 50px;
+  }
+
+  .field-info-card h2,
+  .field-info-card.is-collapsed h2 {
+    font-size: 16px;
+  }
+
+  .field-info-toggle {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+  }
+}

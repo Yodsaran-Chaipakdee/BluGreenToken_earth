@@ -15,10 +15,13 @@ const kmzSelectedLabel = document.querySelector("#kmzSelectedLabel");
 const kmzDropdown = document.querySelector("#kmzDropdown");
 const kmzSearch = document.querySelector("#kmzSearch");
 const fieldInfoCard = document.querySelector("#fieldInfoCard");
+const fieldInfoToggle = document.querySelector("#fieldInfoToggle");
 const fieldInfoTitle = document.querySelector("#fieldInfoTitle");
 
 const FIELD_FLY_HEIGHT_METERS = 500;
 const LOGO_PATH = "./src/Logo.png";
+const KMZ_MANIFEST_API = "/api/v1/earth/kmz-manifest";
+const LOCAL_KMZ_MANIFEST = "./kmz/manifest.json";
 let viewer;
 let spinning = true;
 let userIsInteracting = false;
@@ -30,6 +33,7 @@ let bundledKmzFiles = [];
 let fieldPinImagePromise;
 let activeFieldInfoTitle = "-";
 let fieldInfoHideLockedUntil = 0;
+let isFieldInfoCollapsed = false;
 function normalizeFieldTitle(name) {
   if (!name) return "-";
   return String(name)
@@ -39,11 +43,22 @@ function normalizeFieldTitle(name) {
     .trim() || "-";
 }
 
-function showFieldInfo(title) {
+function setFieldInfoCollapsed(collapsed) {
+  isFieldInfoCollapsed = collapsed;
+  fieldInfoCard.classList.toggle("is-collapsed", collapsed);
+  fieldInfoToggle?.setAttribute("aria-expanded", String(!collapsed));
+}
+
+function showFieldInfo(title, options = {}) {
   activeFieldInfoTitle = normalizeFieldTitle(title);
   fieldInfoHideLockedUntil = performance.now() + 2500;
   fieldInfoTitle.textContent = activeFieldInfoTitle;
   fieldInfoCard.classList.add("is-visible");
+  if (options.expand) {
+    setFieldInfoCollapsed(false);
+  } else if (window.matchMedia?.("(max-width: 680px)").matches) {
+    setFieldInfoCollapsed(true);
+  }
 }
 
 function hideFieldInfo() {
@@ -339,6 +354,23 @@ function setEntityDistanceDisplay(entity, near, far) {
   if (entity.point) entity.point.distanceDisplayCondition = condition;
 }
 
+function addOverviewFill(dataSource, item, positions) {
+  const fillEntity = dataSource.entities.add({
+    name: `${item.name || item.file || "Field"} overview yellow fill`,
+    polygon: {
+      hierarchy: positions,
+      fill: true,
+      outline: false,
+      material: new Cesium.ColorMaterialProperty(
+        Cesium.Color.fromCssColorString("#ffe600").withAlpha(0.28),
+      ),
+      heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+      distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 6500000),
+    },
+  });
+  fillEntity.fieldInfoTitle = item.name || item.file;
+  return fillEntity;
+}
 function addOverviewBoundary(dataSource, item, positions) {
   const loop = closePositions(positions);
   if (loop.length < 2) return;
@@ -476,7 +508,7 @@ async function styleKmzDataSource(dataSource) {
   dataSource.fieldEntities = fieldEntities;
   return fieldCount;
 }
-async function loadOverviewPins(files) {
+async function loadOverviewPins(files, sourceLabel = "KMZ") {
   if (overviewDataSource) {
     viewer.dataSources.remove(overviewDataSource, true);
   }
@@ -488,7 +520,7 @@ async function loadOverviewPins(files) {
   let markerCount = 0;
   for (const item of files) {
     try {
-      const source = `./kmz/${encodeURIComponent(item.file)}`;
+      const source = getKmzItemSource(item);
       const dataSource = await Cesium.KmlDataSource.load(source, {
         camera: viewer.scene.camera,
         canvas: viewer.scene.canvas,
@@ -500,6 +532,7 @@ async function loadOverviewPins(files) {
         const positions = getPolygonPositions(entity, viewer.clock.currentTime);
         if (positions.length < 3) return;
         filePositions.push(...positions);
+        addOverviewFill(overviewDataSource, item, positions);
         addOverviewBoundary(overviewDataSource, item, positions);
       });
 
@@ -514,7 +547,7 @@ async function loadOverviewPins(files) {
     }
   }
 
-  setKmzStatus(markerCount > 0 ? `Ready: ${markerCount} field markers` : "Ready: bundled KMZ");
+  setKmzStatus(markerCount > 0 ? `Ready: ${markerCount} field markers from ${sourceLabel}` : `Ready: ${files.length} KMZ from ${sourceLabel}`);
 }
 async function showKmzDataSource(source, label, activeButton) {
   setKmzStatus("Loading...");
@@ -608,8 +641,10 @@ function renderKmzOptions(files, query = "") {
       const label = getKmzItemLabel(item).toLowerCase();
       const file = String(item?.file || "").toLowerCase();
       const province = String(item?.province || "").toLowerCase();
+      const district = String(item?.district || "").toLowerCase();
+      const subdistrict = String(item?.subdistrict || "").toLowerCase();
       const project = String(item?.project || "").toLowerCase();
-      return !normalizedQuery || `${label} ${file} ${province} ${project}`.includes(normalizedQuery);
+      return !normalizedQuery || `${label} ${file} ${province} ${district} ${subdistrict} ${project}`.includes(normalizedQuery);
     })
     .slice(0, 12);
 
@@ -641,27 +676,60 @@ function renderKmzOptions(files, query = "") {
     kmzTabs.append(button);
   });
 }
+function normalizeKmzManifestItems(data) {
+  const items = Array.isArray(data) ? data : data?.items;
+  if (!Array.isArray(items)) return [];
+  return items
+    .map((item) => {
+      const file = item?.file || item?.fileName;
+      if (!file) return null;
+      return {
+        name: item?.name || file.replace(/\.(kmz|kml)$/i, ""),
+        file,
+        plotCode: item?.plotCode || "",
+        province: item?.province || "",
+        district: item?.district || item?.amphoe || item?.amphur || "",
+        subdistrict: item?.subdistrict || item?.tambon || "",
+        project: item?.project || "",
+        url: item?.url || null,
+      };
+    })
+    .filter(Boolean);
+}
+
+async function fetchKmzManifest(url) {
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error(`KMZ manifest not found: ${response.status}`);
+  return normalizeKmzManifestItems(await response.json());
+}
+
 async function loadBundledKmzList() {
+  let sourceLabel = "API";
   try {
-    const response = await fetch("./kmz/manifest.json", { cache: "no-store" });
-    if (!response.ok) throw new Error("KMZ manifest not found");
-
-    const files = await response.json();
-    bundledKmzFiles = Array.isArray(files) ? files : [];
-    kmzTabs.textContent = "";
-
-    if (bundledKmzFiles.length === 0) {
-      kmzSelectedLabel.textContent = "No bundled KMZ";
-      setKmzStatus("No bundled KMZ");
+    bundledKmzFiles = await fetchKmzManifest(KMZ_MANIFEST_API);
+  } catch (apiError) {
+    console.warn("KMZ API manifest failed, falling back to local manifest", apiError);
+    sourceLabel = "local fallback";
+    try {
+      bundledKmzFiles = await fetchKmzManifest(LOCAL_KMZ_MANIFEST);
+    } catch (localError) {
+      bundledKmzFiles = [];
+      setKmzStatus(localError?.message || "Could not read KMZ list", true);
       return;
     }
-
-    kmzSelectedLabel.textContent = "Select data";
-    renderKmzOptions(bundledKmzFiles);
-    loadOverviewPins(bundledKmzFiles);
-  } catch (error) {
-    setKmzStatus(error?.message || "Could not read KMZ list", true);
   }
+
+  kmzTabs.textContent = "";
+
+  if (bundledKmzFiles.length === 0) {
+    kmzSelectedLabel.textContent = "No bundled KMZ";
+    setKmzStatus(`No KMZ data (${sourceLabel})`);
+    return;
+  }
+
+  kmzSelectedLabel.textContent = "Select data";
+  renderKmzOptions(bundledKmzFiles);
+  await loadOverviewPins(bundledKmzFiles, sourceLabel);
 }
 
 function wireControls() {
@@ -677,7 +745,7 @@ function wireControls() {
   handler.setInputAction((movement) => {
     const picked = viewer.scene.pick(movement.position);
     if (!picked?.id) return;
-    showFieldInfo(picked.id.fieldInfoTitle || picked.id.name);
+    showFieldInfo(picked.id.fieldInfoTitle || picked.id.name, { expand: false });
     flyToFieldEntity(picked.id);
   }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
   handler.setInputAction(() => {
@@ -773,6 +841,7 @@ toggleSpin.addEventListener("click", () => {
 flyThailand.addEventListener("click", flyToThailand);
 flyOrbit.addEventListener("click", flyToOrbit);
 compassNorth.addEventListener("click", resetNorth);
+fieldInfoToggle?.addEventListener("click", () => setFieldInfoCollapsed(!isFieldInfoCollapsed));
 zoomIn.addEventListener("click", () => zoom(0.42));
 zoomOut.addEventListener("click", () => zoom(-0.7));
 uploadKmz.addEventListener("click", () => kmzFile.click());

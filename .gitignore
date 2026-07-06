@@ -1,5 +1,10 @@
 .cesium_tmp/
+.wrangler/
+node_modules/
 server.err.log
 server.out.log
 verify-*.png
 *.tgz
+.env
+.env.*
+.dev.vars

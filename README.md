@@ -2,17 +2,11 @@
 
 CesiumJS prototype for a Google Earth style 3D globe without Google assets or branding.
 
-## What is local
-
-- CesiumJS `1.143.0` is vendored in `vendor/cesium`.
-- The default globe uses Cesium's bundled Natural Earth II imagery, so the core demo can render without CDN JavaScript.
-- This demo intentionally does not use Google Earth imagery or tiles.
-
-## Run
+## Run locally
 
 ```powershell
 cd C:\InternYodsaran\earth-google-style
-python -m http.server 5179 --bind 127.0.0.1
+npm run dev
 ```
 
 Open:
@@ -21,6 +15,23 @@ Open:
 http://127.0.0.1:5179/
 ```
 
-## Notes
+`npm run dev` starts a lightweight local Node server that serves the static Earth Explorer and the KMZ API routes on the same port.
 
-CesiumJS gives the right camera model, globe coordinates, atmosphere, and tile-ready architecture. To zoom into high-detail satellite imagery like Google Earth, connect a properly licensed imagery/terrain tile provider.
+## API routes
+
+- `GET /api/v1/health`
+- `GET /api/v1/earth/kmz-manifest`
+- `GET /api/v1/earth/kmz/:fileName`
+
+The frontend loads `/api/v1/earth/kmz-manifest` first. If that fails, it falls back to `./kmz/manifest.json` for offline/demo use. Manual KMZ/KML upload remains browser-local.
+
+## Cloudflare Worker
+
+`src/worker.js` is the Cloudflare Worker entrypoint. It uses the `KMZ_BUCKET` R2 binding when available and falls back to bundled static `kmz/` files for local/demo behavior.
+
+```powershell
+npm install
+npm run worker:dev
+```
+
+Do not put cloud credentials in frontend code. Use Cloudflare Worker bindings, environment variables, and secrets for cloud access.

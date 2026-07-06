@@ -1,0 +1,24 @@
+﻿name = "blugreentoken-earth"
+main = "src/worker.js"
+compatibility_date = "2026-07-06"
+
+assets = { directory = ".", binding = "STATIC_ASSETS" }
+
+[vars]
+ENVIRONMENT = "production"
+KMZ_PREFIX = "kmz/"
+
+[[r2_buckets]]
+binding = "KMZ_BUCKET"
+bucket_name = "blugreentoken-earth-kmz"
+
+[env.dev]
+name = "blugreentoken-earth-dev"
+
+[env.dev.vars]
+ENVIRONMENT = "development"
+KMZ_PREFIX = "kmz/"
+
+[[env.dev.r2_buckets]]
+binding = "KMZ_BUCKET"
+bucket_name = "blugreentoken-earth-kmz-dev"
