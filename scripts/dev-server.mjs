@@ -1,4 +1,4 @@
-﻿import { createHash } from "node:crypto";
+import { createHash } from "node:crypto";
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { createReadStream, existsSync, statSync } from "node:fs";
@@ -65,7 +65,12 @@ function localPathFor(pathname) {
 }
 
 async function staticResponse(pathname, method = "GET") {
-  const filePath = localPathFor(pathname);
+  let filePath = localPathFor(pathname);
+  if (filePath && existsSync(filePath) && statSync(filePath).isDirectory()) {
+    const indexPath = join(filePath, "index.html");
+    filePath = existsSync(indexPath) ? indexPath : filePath;
+  }
+
   if (!filePath || !existsSync(filePath) || statSync(filePath).isDirectory()) {
     return new Response("Not found", { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8" } });
   }

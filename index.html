@@ -19,6 +19,16 @@
   <body>
     <div id="cesiumContainer" aria-label="Interactive 3D Earth"></div>
 
+    <nav class="app-tabs" aria-label="Explorer pages">
+      <button class="app-tab-button is-active" type="button" data-app-tab="earth" aria-pressed="true">Earth</button>
+      <button class="app-tab-button" type="button" data-app-tab="blu-token" aria-pressed="false">Blu Token</button>
+      <button class="app-tab-button" type="button" data-app-tab="benefits" aria-pressed="false">Benefits</button>
+    </nav>
+
+    <section id="embeddedPageShell" class="embedded-page-shell" hidden aria-label="Additional page preview">
+      <iframe id="embeddedPageFrame" title="Blu Green Token additional page" loading="lazy"></iframe>
+    </section>
+
     <div id="loader" class="loader" role="status">
       <strong>Loading Earth</strong>
       <span>Satellite imagery, atmosphere, stars, and cinematic camera.</span>

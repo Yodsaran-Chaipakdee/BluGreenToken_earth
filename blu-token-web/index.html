@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Blu Green Token mangrove carbon portfolio dashboard — สรุปภาพรวมโครงการ พื้นที่ กระบวนการปลูก เทคโนโลยีติดตาม และหลักฐานสำหรับนักลงทุน" />
+    <title>Blu Green Token | Mangrove Carbon Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient-grid" aria-hidden="true"></div>
+    <header class="site-header" data-header>
+      <a class="brand" href="#top" aria-label="Blu Green Token">
+        <span class="brand-mark"><span>B</span></span>
+        <span class="brand-copy">
+          <strong>Blu Green Token</strong>
+          <small>Mangrove Carbon Portfolio</small>
+        </span>
+      </a>
+      <button class="nav-toggle" type="button" aria-label="เปิดเมนู" data-nav-toggle>
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" data-nav>
+        <a href="#portfolio">Portfolio</a>
+        <a href="#status">Status</a>
+        <a href="#process">Process</a>
+        <a href="#monitoring">Monitoring</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#evidence">Evidence</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-bg" aria-hidden="true">
+          <img src="assets/slides/hero-mangrove-wide.webp" alt="" />
+        </div>
+        <div class="hero-shade" aria-hidden="true"></div>
+        <div class="hero-inner">
+          <div class="hero-copy reveal">
+            <p class="eyebrow">Carbon Dashboard v3 Theme</p>
+            <h1 id="hero-title">โครงการปลูกป่าชายเลน<br />เพื่อประโยชน์จากคาร์บอนเครดิต</h1>
+            <p class="lead">หน้าเว็บนำเสนอ BLU Green Token ในรูปแบบ dashboard สีน้ำเงิน-เขียว เน้นความโปร่งใส กระบวนการติดตามด้วย AI / GIS / Drone และหลักฐานโครงการที่อ่านง่ายสำหรับผู้ลงทุน</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#portfolio">ดู Dashboard</a>
+              <a class="btn btn-ghost" href="#evidence">ดูภาพหลักฐาน</a>
+            </div>
+            <div class="mini-ticker" aria-label="key claims">
+              <span>Tokenized Carbon Credit</span>
+              <span>T-VER Pathway</span>
+              <span>AI Satellite Monitoring</span>
+            </div>
+          </div>
+          <aside class="hero-dashboard reveal delay-1" aria-label="ภาพรวมหลักจาก deck">
+            <div class="device-frame">
+              <div class="device-topline">
+                <span></span><span></span><span></span>
+                <strong>BLU Project Console</strong>
+              </div>
+              <img src="assets/slides/cover.webp" alt="สไลด์หน้าปกโครงการปลูกป่าชายเลนเพื่อประโยชน์จากคาร์บอนเครดิต" />
+              <div class="metric-float metric-float-a"><strong>17,531.04</strong><span>ไร่ใน TOKEN scope</span></div>
+              <div class="metric-float metric-float-b"><strong>15</strong><span>จังหวัด</span></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="portfolio" class="section section-overlap reveal" aria-labelledby="portfolio-title">
+        <div class="dashboard-panel portfolio-panel">
+          <div class="section-heading split">
+            <div>
+              <p class="eyebrow">Portfolio Snapshot</p>
+              <h2 id="portfolio-title">ภาพรวมโครงการแบบ Dashboard</h2>
+            </div>
+            <p>ย่อยข้อมูลจาก deck ให้เป็น layer เว็บ: summary สำหรับ public, dashboard สำหรับนักลงทุน และ evidence package สำหรับ verifier</p>
+          </div>
+          <div class="kpi-grid">
+            <article class="kpi-card primary-kpi">
+              <span class="kpi-icon leaf"></span>
+              <small>พื้นที่ปลูกรวมที่เข้าร่วม TOKEN</small>
+              <strong data-count="17531.04">17,531.04</strong>
+              <span>ไร่</span>
+            </article>
+            <article class="kpi-card">
+              <span class="kpi-icon map"></span>
+              <small>ครอบคลุมพื้นที่</small>
+              <strong data-count="15">15</strong>
+              <span>จังหวัด</span>
+            </article>
+            <article class="kpi-card">
+              <span class="kpi-icon certificate"></span>
+              <small>โครงการขึ้นทะเบียน T-VER แล้ว</small>
+              <strong data-count="4">4</strong>
+              <span>โครงการ</span>
+            </article>
+            <article class="kpi-card">
+              <span class="kpi-icon clock"></span>
+              <small>ระยะเวลาโครงการ BLU</small>
+              <strong data-count="7">7</strong>
+              <span>ปี</span>
+            </article>
+          </div>
+          <div class="insight-row">
+            <article class="insight-card">
+              <h3>ข้อมูลเปิดเผยหลัก</h3>
+              <p>พื้นที่ จังหวัด สถานะ T-VER กระบวนการปลูก และภาพความก้าวหน้าระดับ summary</p>
+            </article>
+            <article class="insight-card accent">
+              <h3>Investor-ready layer</h3>
+              <p>dashboard รายไตรมาส, carbon forecast, canopy coverage, survival trend และชุดภาพ before/after ที่ผ่านการคัดกรอง</p>
+            </article>
+            <article class="insight-card dark">
+              <h3>Verifier package</h3>
+              <p>เอกสาร T-VER, monitoring report, evidence trail และข้อมูลประกอบการตรวจประเมิน</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="status" class="section reveal" aria-labelledby="status-title">
+        <div class="section-heading centered">
+          <p class="eyebrow">Project Status</p>
+          <h2 id="status-title">สถานะพื้นที่และภาพรวมการดำเนินงาน</h2>
+          <p>ใช้ visual จาก PDF เป็น dashboard cards เพื่อคุม tone เดียวกับ deck และ repo</p>
+        </div>
+        <div class="media-grid two">
+          <article class="media-card large">
+            <img src="assets/slides/status-token.webp" alt="ภาพรวมของโครงการที่เข้าร่วม TOKEN" loading="lazy" />
+            <div class="media-caption">
+              <span>Portfolio map</span>
+              <h3>15 จังหวัด / 4 โครงการ T-VER</h3>
+              <p>สรุปพื้นที่ปลูกและจังหวัดที่ครอบคลุมชายฝั่งไทยและอันดามัน</p>
+            </div>
+          </article>
+          <article class="media-card stacked">
+            <img src="assets/slides/carbon-estimate.webp" alt="กราฟประมาณการปริมาณก๊าซเรือนกระจก Carbon Credit" loading="lazy" />
+            <div class="media-caption">
+              <span>Carbon forecast</span>
+              <h3>Projection view</h3>
+              <p>แปลง chart ใน deck ให้เป็นมุมมอง forecast สำหรับ investor dashboard</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="process" class="section reveal" aria-labelledby="process-title">
+        <div class="process-header">
+          <div>
+            <p class="eyebrow">Mangrove Planting Process</p>
+            <h2 id="process-title">ขั้นตอนการปลูกป่าชายเลน</h2>
+          </div>
+          <p>เล่ากระบวนการจากการขึ้นทะเบียนและฟังเสียงชุมชน ไปถึงปลูกซ่อม รับรอง T-VER และดูแลต่อเนื่อง 30 ปี</p>
+        </div>
+        <div class="process-layout">
+          <div class="process-image-card">
+            <img src="assets/slides/planting-process.webp" alt="ขั้นตอนการปลูกป่าชายเลน 12 ขั้นตอน" loading="lazy" />
+          </div>
+          <div class="process-steps" role="list">
+            <article role="listitem"><span>01</span><h3>Register & Community</h3><p>จัดจ้าง ขึ้นทะเบียน และรับฟังความคิดเห็นของชุมชนในพื้นที่</p></article>
+            <article role="listitem"><span>02</span><h3>Survey & Boundary</h3><p>สำรวจ รังวัด ปักหลักหมายแนวเขต และเตรียมพื้นที่ปลูก</p></article>
+            <article role="listitem"><span>03</span><h3>Plant & Inspect</h3><p>ดำเนินการปลูก ตรวจนับอัตรารอดตาย และปลูกซ่อมเมื่อพบความเสียหาย</p></article>
+            <article role="listitem"><span>04</span><h3>T-VER & Maintenance</h3><p>ขึ้นทะเบียน รับรองคาร์บอนเครดิต และบำรุงรักษาในระยะยาว</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section id="monitoring" class="section reveal" aria-labelledby="monitoring-title">
+        <div class="section-heading split">
+          <div>
+            <p class="eyebrow">Technology-enabled Monitoring</p>
+            <h2 id="monitoring-title">ระบบติดตามด้วย AI, GIS, Drone และภาคสนาม</h2>
+          </div>
+          <p>จัดหน้าแบบ console: เลือก layer ที่ต้องการดูและเปิดภาพประกอบจาก PDF ได้ทันที</p>
+        </div>
+        <div class="monitor-console">
+          <div class="tab-list" role="tablist" aria-label="Monitoring layers">
+            <button class="tab is-active" type="button" role="tab" aria-selected="true" data-tab="tech">Tech Plan</button>
+            <button class="tab" type="button" role="tab" aria-selected="false" data-tab="roadmap-slide">AI Roadmap</button>
+            <button class="tab" type="button" role="tab" aria-selected="false" data-tab="risk">Risk Framework</button>
+            <button class="tab" type="button" role="tab" aria-selected="false" data-tab="outputs">Outputs</button>
+          </div>
+          <div class="tab-panels">
+            <article class="tab-panel is-active" data-panel="tech">
+              <img src="assets/slides/tech-plan.webp" alt="แผนการดำเนินงานจัดการและฟื้นฟูป่าชายเลนด้วยเทคโนโลยี" loading="lazy" />
+              <div><h3>Replanting + Forest Optimization</h3><p>ค้นหาช่องโหว่ของป่า ปลูกซ่อมแบบเจาะจง ยืนยันด้วยโดรน และวิเคราะห์ความหนาแน่นเพื่อกำหนด pruning prescription map</p></div>
+            </article>
+            <article class="tab-panel" data-panel="roadmap-slide">
+              <img src="assets/slides/roadmap.webp" alt="แนวทางการบริหารจัดการและการติดตามโครงการ" loading="lazy" />
+              <div><h3>AI Satellite Monitoring ตลอดโครงการ</h3><p>สร้าง baseline ปีแรก, targeted replanting ในปี 2–3, thinning / optimization ตั้งแต่ปี 4 และ verification รอบสำคัญในปี 5</p></div>
+            </article>
+            <article class="tab-panel" data-panel="risk">
+              <img src="assets/slides/risk-framework.webp" alt="กรอบการบริหารความเสี่ยง" loading="lazy" />
+              <div><h3>Detect → Alert → Assess → Escalate → Respond</h3><p>ใช้ AI Satellite Early Warning System เพื่อติดตามภัยธรรมชาติ อัตรารอดตายต่ำกว่าเกณฑ์ และการบุกรุกพื้นที่</p></div>
+            </article>
+            <article class="tab-panel" data-panel="outputs">
+              <img src="assets/slides/outputs.webp" alt="Output ที่นักลงทุนติดตามได้" loading="lazy" />
+              <div><h3>Annual Report / Dashboard / Evidence / Certificate</h3><p>กำหนด output ที่นักลงทุนติดตามได้เป็นรอบ ตั้งแต่รายงานรายปี dashboard รายไตรมาส ไปจนถึง T-VER certificate</p></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="roadmap" class="section reveal" aria-labelledby="roadmap-title">
+        <div class="section-heading centered compact">
+          <p class="eyebrow">7-year Operating Roadmap</p>
+          <h2 id="roadmap-title">Roadmap การบริหารโครงการ BLU</h2>
+        </div>
+        <div class="timeline" role="list">
+          <article role="listitem"><span>ปีที่ 1</span><h3>Baseline</h3><p>บินโดรนและภาพดาวเทียมครั้งแรก สร้าง canopy map, GIS boundary และรายงานตั้งต้น</p></article>
+          <article role="listitem"><span>ปีที่ 2–3</span><h3>Replanting Phase</h3><p>AI ระบุ canopy gap / ต้นตาย แล้วจัดลำดับความสำคัญสำหรับปลูกเสริมแบบ targeted</p></article>
+          <article role="listitem"><span>ปีที่ 4+</span><h3>Forest Optimization</h3><p>วิเคราะห์ canopy density และ competition index เพื่อกำหนด thinning / pruning map</p></article>
+          <article role="listitem"><span>ปีที่ 5</span><h3>T-VER Verification</h3><p>จัด monitoring report รอบที่ 2 ส่ง TGO และ third-party verifier พร้อมหลักฐาน data layer</p></article>
+          <article role="listitem"><span>ปีที่ 6–7</span><h3>Continuous Monitoring</h3><p>ติดตาม satellite ต่อเนื่อง ประเมิน carbon stock และความเสี่ยงเชิงรุก</p></article>
+          <article role="listitem"><span>ปีที่ 7</span><h3>Maturity + ส่งมอบ</h3><p>สรุป total carbon credit ตลอดโครงการ และส่งมอบแปลงปลูกตามสัญญาระยะยาว</p></article>
+        </div>
+      </section>
+
+      <section class="section reveal" aria-labelledby="risk-title">
+        <div class="risk-panel">
+          <div class="risk-copy">
+            <p class="eyebrow">Risk Response</p>
+            <h2 id="risk-title">บริหารความเสี่ยงให้เป็นระบบ</h2>
+            <p>เว็บจัด risk framework ให้เห็น workflow ชัดเจน: ตรวจจับ แจ้งเตือน ประสานงาน ดำเนินการ และบันทึกรายงาน</p>
+            <ul class="check-list">
+              <li>พายุ / น้ำท่วม: ตรวจล่วงหน้าและวาง replanting plan</li>
+              <li>ต้นไม้ตายสะสม: buffer pool และชดเชย carbon credit ที่หายไป</li>
+              <li>ผู้บุกรุก: boundary alert และบันทึกหลักฐานอย่างเป็นระบบ</li>
+            </ul>
+          </div>
+          <div class="risk-media">
+            <img src="assets/slides/risk-response.webp" alt="กระบวนการรับมือความเสี่ยง" loading="lazy" />
+          </div>
+        </div>
+      </section>
+
+      <section id="evidence" class="section reveal" aria-labelledby="evidence-title">
+        <div class="section-heading split">
+          <div>
+            <p class="eyebrow">Evidence Gallery</p>
+            <h2 id="evidence-title">ภาพหลักฐานจาก PDF ที่เอามาทำเป็นเว็บ</h2>
+          </div>
+          <p>ภาพถูกนำมาใช้เป็น card แบบ dashboard: ดูเร็ว เปิดขยายได้ และต่อยอดเป็น data room ได้</p>
+        </div>
+        <div class="evidence-gallery">
+          <article class="gallery-card featured" data-lightbox="assets/slides/tgo-monitoring.webp">
+            <img src="assets/slides/tgo-monitoring.webp" alt="การติดตามการดำเนินโครงการร่วมกับ อบก." loading="lazy" />
+            <div><span>Field monitoring</span><h3>การติดตามการดำเนินโครงการร่วมกับ อบก.</h3></div>
+          </article>
+          <article class="gallery-card" data-lightbox="assets/slides/seedling-small.webp">
+            <img src="assets/slides/seedling-small.webp" alt="โกงกางใบเล็กสูงเฉลี่ย 54-70 ซม." loading="lazy" />
+            <div><span>Seedling evidence</span><h3>โกงกางใบเล็ก 54–70 ซม.</h3></div>
+          </article>
+          <article class="gallery-card" data-lightbox="assets/slides/seedling-large.webp">
+            <img src="assets/slides/seedling-large.webp" alt="โกงกางใบใหญ่สูงเฉลี่ย 67-70 ซม." loading="lazy" />
+            <div><span>Seedling evidence</span><h3>โกงกางใบใหญ่ 67–70 ซม.</h3></div>
+          </article>
+          <article class="gallery-card" data-lightbox="assets/slides/field-replanting-1.webp">
+            <img src="assets/slides/field-replanting-1.webp" alt="ภาพการดำเนินการปลูกซ่อม" loading="lazy" />
+            <div><span>Replanting proof</span><h3>ภาพการดำเนินการปลูกซ่อม</h3></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section reveal" aria-labelledby="deliverables-title">
+        <div class="deliverables-panel">
+          <div>
+            <p class="eyebrow">Investor Outputs</p>
+            <h2 id="deliverables-title">Output ที่ควรมีในเว็บจริง</h2>
+          </div>
+          <div class="deliverable-grid">
+            <article><span>01</span><h3>Annual Report</h3><p>สถานะแปลง carbon projection และ milestone รายปี</p></article>
+            <article><span>02</span><h3>Quarterly Dashboard</h3><p>survival rate รายแปลง canopy coverage และ carbon forecast</p></article>
+            <article><span>03</span><h3>Drone + Satellite</h3><p>before/after และ evidence trail ที่เปิดเผยตามสิทธิ์</p></article>
+            <article><span>04</span><h3>T-VER Certificate</h3><p>certificate รอบปีที่ 3 และปีที่ 5 ออกโดย TGO</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section final-section reveal" aria-labelledby="final-title">
+        <div class="final-card">
+          <img src="assets/slides/mangrove-photo.webp" alt="ภาพป่าชายเลน" loading="lazy" />
+          <div>
+            <p class="eyebrow">Ready to deploy</p>
+            <h2 id="final-title">โครงเว็บพร้อมนำไปต่อเป็น React/Vite หรือ deploy แบบ static</h2>
+            <p>ไฟล์นี้ไม่มี build step ภายนอก เปิด index.html ได้ทันที และแยก asset จาก PDF ไว้ครบในโฟลเดอร์ assets/slides</p>
+            <a class="btn btn-primary" href="#top">กลับด้านบน</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="lightbox" data-lightbox-dialog aria-hidden="true">
+      <button class="lightbox-close" type="button" aria-label="ปิดรูป" data-lightbox-close>×</button>
+      <img src="" alt="ภาพขยาย" data-lightbox-img />
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

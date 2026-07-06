@@ -17,11 +17,18 @@ const kmzSearch = document.querySelector("#kmzSearch");
 const fieldInfoCard = document.querySelector("#fieldInfoCard");
 const fieldInfoToggle = document.querySelector("#fieldInfoToggle");
 const fieldInfoTitle = document.querySelector("#fieldInfoTitle");
+const appTabButtons = Array.from(document.querySelectorAll("[data-app-tab]"));
+const embeddedPageShell = document.querySelector("#embeddedPageShell");
+const embeddedPageFrame = document.querySelector("#embeddedPageFrame");
 
 const FIELD_FLY_HEIGHT_METERS = 500;
 const LOGO_PATH = "./src/Logo.png";
 const KMZ_MANIFEST_API = "/api/v1/earth/kmz-manifest";
 const LOCAL_KMZ_MANIFEST = "./kmz/manifest.json";
+const EMBEDDED_PAGES = {
+  "blu-token": "./blu-token-web/",
+  benefits: "./investor-non-carbon-benefits-visual-fixed/",
+};
 let viewer;
 let spinning = true;
 let userIsInteracting = false;
@@ -91,6 +98,30 @@ function showError(error) {
 
 function hideLoader() {
   loader.classList.add("is-hidden");
+}
+
+function setActiveAppTab(tabName) {
+  const isEmbeddedPage = tabName !== "earth";
+  appTabButtons.forEach((button) => {
+    const isActive = button.dataset.appTab === tabName;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+
+  document.body.classList.toggle("is-embedded-page", isEmbeddedPage);
+  if (!embeddedPageShell || !embeddedPageFrame) return;
+
+  if (!isEmbeddedPage) {
+    embeddedPageShell.hidden = true;
+    requestAnimationFrame(() => viewer?.resize());
+    return;
+  }
+
+  const pageUrl = EMBEDDED_PAGES[tabName];
+  if (pageUrl && embeddedPageFrame.getAttribute("src") !== pageUrl) {
+    embeddedPageFrame.src = pageUrl;
+  }
+  embeddedPageShell.hidden = false;
 }
 
 function easeInOutCubic(time) {
@@ -842,6 +873,9 @@ flyThailand.addEventListener("click", flyToThailand);
 flyOrbit.addEventListener("click", flyToOrbit);
 compassNorth.addEventListener("click", resetNorth);
 fieldInfoToggle?.addEventListener("click", () => setFieldInfoCollapsed(!isFieldInfoCollapsed));
+appTabButtons.forEach((button) => {
+  button.addEventListener("click", () => setActiveAppTab(button.dataset.appTab || "earth"));
+});
 zoomIn.addEventListener("click", () => zoom(0.42));
 zoomOut.addEventListener("click", () => zoom(-0.7));
 uploadKmz.addEventListener("click", () => kmzFile.click());
